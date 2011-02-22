@@ -33,6 +33,8 @@ fail()
   exit 1;
 }
 
+LANG=C
+
 while [ $# -gt 0 ]; do
   case $1 in
     --dist)
@@ -155,7 +157,7 @@ if [ "$REBUILD" != "yes" ]; then
     mock -r $LCDIST-$MOCKVER-$i --init >> $LOGFILE 2>&1 && ok || fail
 
     echo -n "Installing pungi     -  $i"
-    mock -r $LCDIST-$MOCKVER-$i --install pungi $LCDIST-kickstarts >> $LOGFILE 2>&1 && ok || fail
+    mock -r $LCDIST-$MOCKVER-$i --install MAKEDEV pungi $LCDIST-kickstarts >> $LOGFILE 2>&1 && ok || fail
 
     # Some releases ago we should do it.
     echo -n "Removing database    -  $i"
@@ -194,6 +196,12 @@ for i in $ARCH; do
   if [ "$LOCAL" == "yes" ]; then
     mock -r $LCDIST-$MOCKVER-$i --chroot "sed -i 's!http://mirrors.rfremix.ru!http://localhost!g' $KS" >> $LOGFILE 2>&1
   fi
+
+  # clean temp directories (f15 pungi trouble)
+  mock -r $LCDIST-$MOCKVER-$i --chroot "cd builddir; rm -rf work logs $VERSION;" >> $LOGFILE 2>&1
+
+  # create loop devices (f15 pungi trouble)  
+  mock -r $LCDIST-$MOCKVER-$i --chroot "MAKEDEV lo" >> $LOGFILE 2>&1
 
   mock -r $LCDIST-$MOCKVER-$i --chroot "cd builddir; pungi -c $KS --name=$DIST --nodebuginfo --nosource \
     --force $BUILDPARAM > $LCDIST-$VERSION-$i-build.log 2>&1" >> $LOGFILE 2>&1 && ok || fail
