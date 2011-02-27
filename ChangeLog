@@ -1,3 +1,6 @@
+* Mon Feb 28 2011 [0.4]
+- adapt to using Fedora 15 with new pungi
+
 * Tue Oct 26 2010 [0.3]
 - do not create MeeGo and Games from 'all' build
 
