@@ -5,18 +5,16 @@ export LANG=C
 usage()
 {
   echo
-  echo "Create RFRemix Live images based on Fedora 14 package base"
+  echo "Create RFRemix Live images based on Fedora 15 package base"
   echo "from internet."
   echo
   echo "create-live <imagename> <i686|x86_64|all> <version>"
-  echo "	-g  - GNOME LiveCD"
-  echo "	-k  - KDE LiveCD"
-  echo "	-x  - XFCE LiveCD"
-  echo "	-l  - LXDE LiveCD"
-  echo "	-d  - GNOME, KDE, XFCE, LXDE LiveDVD"
-  echo "	-m  - Meego LiveCD"
-  echo "	-ga - Games LiveCD"
-  echo "	-kd - KDE LiveDVD"
+  echo "	-g - GNOME LiveCD"
+  echo "	-k - KDE LiveCD"
+  echo "	-x - XFCE LiveCD"
+  echo "	-l - LXDE LiveCD"
+  echo "	-d - GNOME, KDE, XFCE, LXDE LiveDVD"
+  echo "	-K - KDE LiveDVD"
   exit 2
 }
 
@@ -28,7 +26,6 @@ ok()
 fail()
 {
   echo -e "\t\t\\033[0;31m[ FAIL ]\\033[0;39m"
-  exit 1;
 }
 
 if [ `id -u` -ne 0 ]; then
@@ -36,9 +33,9 @@ if [ `id -u` -ne 0 ]; then
   exit 3
 fi
 
-BUILDDIR="$(pwd)/"
-CONFIGPATH="$BUILDDIR/kickstarts/"
-LOGFILE="$BUILDDIR/build.log"
+BUILDDIR="$(pwd)"
+CONFIGPATH="$BUILDDIR/kickstarts"
+LOGFILE="$BUILDDIR/build-$(date +%Y%m%d%H%M).log"
 
 if [ ! -d "/usr/share/spin-kickstarts/" ]; then
   echo "No config found. Abort..."
@@ -66,15 +63,7 @@ case "$1" in
     DIST=("LiveDVD")
     CONFIG=("$CONFIGPATH/rfremix-livedvd-desktop-ru_RU.ks")
     ;;
-  -m)
-    DIST=("Live-MeeGo")
-    CONFIG=("$CONFIGPATH/rfremix-livecd-meego-ru_RU.ks")
-    ;;
-  -ga)
-    DIST=("LiveDVD-Games")
-    CONFIG=("$CONFIGPATH/rfremix-livedvd-games-ru_RU.ks")
-    ;;
-  -kd)
+  -K)
     DIST=("LiveDVD-KDE")
     CONFIG=("$CONFIGPATH/rfremix-livedvd-kde-ru_RU.ks")
     ;;
@@ -128,18 +117,24 @@ fi
 echo -n "Creating Build directory                       "
 mkdir -p $BUILDDIR/tmp && mkdir -p $BUILDDIR/kickstarts && ok || fail
 
-echo -n "Copying kickstarts files                       "
-cp /usr/share/spin-kickstarts/rfremix-live*ks \
-  $BUILDDIR/kickstarts/ && ok || fail
+if [ "$(ls -A $BUILDDIR/kickstarts)" ]; then
+  echo "$BUILDDIR/kickstarts/ is not empty"
+else
+  echo -n "Copying kickstarts files                       "
+  cp /usr/share/spin-kickstarts/rfremix-live*ks \
+    $BUILDDIR/kickstarts/ && ok || faile
+fi
 
 LOCAL=$4
 
 if [ "x$LOCAL" == "x--local" ]; then
-  sed -i 's!http://mirrors.rfremix.ru!http://localhost!g' $BUILDDIR/kickstarts/rfremix-live-base.ks
-  sed -i 's!http://mirrors.rfremix.ru!http://localhost!g' $BUILDDIR/kickstarts/rfremix-live-mini.ks
+  sed -i 's!http://mirrors.rfremix.ru!http://localhost!g' \
+    $BUILDDIR/kickstarts/rfremix-live-base.ks
+  sed -i 's!http://mirrors.rfremix.ru!http://localhost!g' \
+    $BUILDDIR/kickstarts/rfremix-live-mini.ks
 fi
 
-echo "Loggin to ${BUILDDIR}build.log"
+echo "Logging to $LOGFILE"
 
 pushd $BUILDDIR > /dev/null
 
@@ -150,10 +145,19 @@ for arch in $ARCH; do
       exit 10
     fi
 
-    rm -f RFRemix-$version-$arch-${DIST[i]}.iso RFRemix-$version-$arch-${DIST[i]}-CHECKSUM
+    rm -f RFRemix-$version-$arch-${DIST[i]}.iso
+    rm -f RFRemix-$version-$arch-${DIST[i]}-CHECKSUM
+
+    LABEL=$(echo RFRemix-$version-$arch-${DIST[i]}.iso | sed 's!\.iso!!g' | cut -b 1-32)
+
     echo -n "Creating RFRemix-$version-$arch-${DIST[i]}.iso "
-    setarch $arch livecd-creator -t $BUILDDIR/tmp --cache=$BUILDDIR/tmp -f RFRemix-$version-$arch-${DIST[i]} -c ${CONFIG[i]} \
-      > $LOGFILE 2>&1 && sha256sum RFRemix-$version-$arch-${DIST[i]}.iso > RFRemix-$version-$arch-${DIST[i]}-CHECKSUM && ok || fail
+
+    setarch $arch livecd-creator -v -d -t $BUILDDIR/tmp --cache=$BUILDDIR/tmp \
+        -f $LABEL -c ${CONFIG[i]} >> $LOGFILE 2>&1 && \
+      if [ "$LABEL.iso" != "RFRemix-$version-$arch-${DIST[i]}.iso" ]; then
+        mv $LABEL.iso RFRemix-$version-$arch-${DIST[i]}.iso; fi && \
+      sha256sum RFRemix-$version-$arch-${DIST[i]}.iso > \
+        RFRemix-$version-$arch-${DIST[i]}-CHECKSUM && ok || fail
   done
 done
 
