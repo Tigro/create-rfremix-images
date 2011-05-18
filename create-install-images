@@ -223,10 +223,7 @@ for i in $ARCH; do
   # clean temp directories (f15 pungi trouble)
   mock -r $LCDIST-$MOCKVER-$i --chroot "cd builddir; rm -rf work logs $VERSION;" >> $LOGFILE 2>&1
 
-  # create loop devices (f15 pungi trouble)  
-  mock -r $LCDIST-$MOCKVER-$i --chroot "MAKEDEV lo" >> $LOGFILE 2>&1
-
-  mock -r $LCDIST-$MOCKVER-$i --chroot "cd builddir; pungi -c $KS --name=$DIST --nodebuginfo --nosource \
+  mock -r $LCDIST-$MOCKVER-$i --chroot "cd builddir; MAKEDEV lo; pungi -c $KS --name=$DIST --nodebuginfo --nosource \
     --force $BUILDPARAM > $LCDIST-$VERSION-$i-build.log 2>&1" >> $LOGFILE 2>&1 && ok || fail
 
   echo "New distribution created in /var/lib/mock/$LCDIST-$MOCKVER-$i/root/builddir/$VERSION/"
