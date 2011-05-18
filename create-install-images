@@ -10,14 +10,15 @@ usage()
   echo
   echo "Create Fedora or RFRemix images from Internet"
   echo
-  echo "Usage: create-install-images --dist <dist name> --ver <version> --arch <arch> [--split] [--rebuild] [--config <ks>]"
+  echo "Usage: create-install-images --dist <dist name> --ver <version> --arch <arch> [--vcs-configs] [--split] [--rebuild] [--config <ks>]"
   echo
-  echo "       dist name: Fedora | RFRemix"
-  echo "       version:   supported versions separated by '.' and '-' and rawhide. Ex. 14-Beta, 12.2, rawhide"
-  echo "       arch:      i386 | x86_64 | all"
-  echo "       --split:   create install CD disks"
-  echo "       --rebuild: only run pungi in created mock environment"
-  echo "       --config:  use custom kickstart file"
+  echo "       dist name:     Fedora | RFRemix"
+  echo "       version:       supported versions separated by '.' and '-' and rawhide. Ex. 14-Beta, 12.2, rawhide"
+  echo "       arch:          i386 | x86_64 | all"
+  echo "       --vcs-configs: pull kickstarts from GIT"
+  echo "       --split:       create install CD disks"
+  echo "       --rebuild:     only run pungi in created mock environment"
+  echo "       --config:      use custom kickstart file"
   echo
   exit 1;
 }
