@@ -143,7 +143,7 @@ for arch in $ARCH; do
 done
 
 # check for split
-if [ "$SPLIT" == "yes" -o "$MOCKVER" == "15" ]; then
+if [ "$SPLIT" == "yes" -o "$MOCKVER" == "15" -o "$MOCKVER" == "rawhide" ]; then
   BUILDPARAM="$BUILDPARAM $ISOVER"
 elif [ "$SPLIT" == "" ]; then
   BUILDPARAM="$BUILDPARAM $ISOVER --nosplitmedia"
