@@ -4,6 +4,7 @@
 - run MAKEDEV lo in pungi section
 - added --vcs-configs option to pull configs from git, not from package
 - added new pungi parameter (--isfinal) detection
+- added --local option for using localhost instead official mirrors
 
 * Mon Feb 28 2011 [0.4]
 - adapt to using Fedora 15 with new pungi
