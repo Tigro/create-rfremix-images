@@ -149,6 +149,13 @@ elif [ "$SPLIT" == "" ]; then
   BUILDPARAM="$BUILDPARAM $ISOVER --nosplitmedia"
 fi
 
+# new final release feature
+if [ "$MOCKVER" != "rawhide" ]; then
+  if [ $MOCKVER -ge 15 ]; then
+    BUILDPARAM="$BUILDPARAM --isfinal"
+  fi
+fi
+
 echo
 echo "Logging to $LOGFILE"
 
