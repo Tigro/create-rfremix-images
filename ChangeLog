@@ -1,4 +1,5 @@
-* Thu May 19 2011 [0.5]
+* Sat May 21 2011 [0.5]
+- release 0.5
 - do not use --nosplitmedia for rawhide
 - copy kickstarts only if directory empty (create-live)
 - run MAKEDEV lo in pungi section
