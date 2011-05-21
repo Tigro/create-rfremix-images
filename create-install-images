@@ -12,15 +12,15 @@ usage()
   echo
   echo "Usage: create-install-images --dist <dist name> --ver <version> --arch <arch> [options]"
   echo
-  echo "       dist name:     Fedora | RFRemix"
-  echo "       version:       supported versions separated by '.' and '-' and rawhide. Ex. 14-Beta, 12.2, rawhide"
-  echo "       arch:          i386 | x86_64 | all"
-  echo "       options:"
-  echo "       --vcs-configs  pull kickstarts from GIT"
-  echo "       --split        create install CD disks"
-  echo "       --rebuild      only run pungi in created mock environment"
-  echo "       --config <ks>  use custom kickstart file"
-  echo "       --local        use localhost instead of mirrors.rfremix.ru"
+  echo "    dist name:     Fedora | RFRemix"
+  echo "    version:       supported versions separated by '.' and '-' and rawhide. Ex. 14-Beta, 12.2, rawhide"
+  echo "    arch:          i386 | x86_64 | all"
+  echo "    options:"
+  echo "    --vcs-configs  pull kickstarts from GIT"
+  echo "    --split        create install CD disks"
+  echo "    --rebuild      only run pungi in created mock environment"
+  echo "    --config <ks>  use custom kickstart file"
+  echo "    --local        use localhost instead of mirrors.rfremix.ru"
   echo
   exit 1;
 }
