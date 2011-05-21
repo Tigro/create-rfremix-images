@@ -68,12 +68,11 @@ case "$1" in
     CONFIG=("$CONFIGPATH/rfremix-livedvd-kde-ru_RU.ks")
     ;;
   -a)
-    DIST=("Live-GNOME" "Live-KDE" "Live-XFCE" "Live-LXDE" "LiveDVD" "LiveDVD-KDE")
+    DIST=("Live-GNOME" "Live-KDE" "Live-XFCE" "Live-LXDE" "LiveDVD-KDE")
     CONFIG=("$CONFIGPATH/rfremix-livecd-desktop-ru_RU.ks"
             "$CONFIGPATH/rfremix-livecd-kde-ru_RU.ks"
             "$CONFIGPATH/rfremix-livecd-xfce-ru_RU.ks"
             "$CONFIGPATH/rfremix-livecd-lxde-ru_RU.ks"
-            "$CONFIGPATH/rfremix-livedvd-desktop-ru_RU.ks"
             "$CONFIGPATH/rfremix-livedvd-kde-ru_RU.ks")
     ;;
   -clean-all)
