@@ -20,7 +20,7 @@ usage()
   echo "       --split        create install CD disks"
   echo "       --rebuild      only run pungi in created mock environment"
   echo "       --config <ks>  use custom kickstart file"
-  echo "       --local        use http://localhost instead of official mirrors"
+  echo "       --local        use localhost instead of mirrors.rfremix.ru"
   echo
   exit 1;
 }
