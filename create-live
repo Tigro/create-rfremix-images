@@ -9,6 +9,8 @@ usage()
   echo "from internet."
   echo
   echo "create-live <imagename> <i686|x86_64|all> <version> [options]"
+  echo
+  echo "      imagename:"
   echo "	-g - GNOME LiveCD"
   echo "	-k - KDE LiveCD"
   echo "	-x - XFCE LiveCD"
@@ -16,6 +18,8 @@ usage()
   echo "	-d - GNOME, KDE, XFCE, LXDE LiveDVD"
   echo "	-K - KDE LiveDVD"
   echo "	-a - Build GNOME, KDE, XFCE, LXDE and LiveDVD images"
+  echo
+  echo "      options:"
   echo "   --local - use localhost instead of mirrors.rfremix.ru"
   exit 2
 }
