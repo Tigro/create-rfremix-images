@@ -149,7 +149,7 @@ for arch in $ARCH; do
 
     LABEL=$(echo RFRemix-$version-$arch-${DIST[i]}.iso | sed 's!\.iso!!g' | cut -b 1-32)
 
-    echo -n "Creating RFRemix-$version-$arch-${DIST[i]}.iso "
+    echo -n "Creating RFRemix-$version-$arch-${DIST[i]}.iso   "
 
     setarch $arch livecd-creator -v -d -t $BUILDDIR/tmp --cache=$BUILDDIR/tmp \
         -f $LABEL -c ${CONFIG[i]} >> $LOGFILE 2>&1 && \
