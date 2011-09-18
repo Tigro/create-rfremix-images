@@ -93,7 +93,7 @@ RAWHIDEKS="/usr/share/spin-kickstarts/$LCDIST-install-rawhide-$LCDIST.ks"
 RELEASEKS="/usr/share/spin-kickstarts/$LCDIST-install-$LCDIST.ks"
 LOGFILE="/var/tmp/$LCDIST-build.log"
 
-SUPPORT_VERSIONS="13 14 15 rawhide"
+SUPPORT_VERSIONS="13 14 15 16 rawhide"
 
 # check version
 MOCKVER=$(echo $VERSION | awk -F"." '{ print $1 }' | awk -F"-" '{ print $1 }')
@@ -145,7 +145,7 @@ for arch in $ARCH; do
 done
 
 # check for split
-if [ "$SPLIT" == "yes" -o "$MOCKVER" == "15" -o "$MOCKVER" == "rawhide" ]; then
+if [ "$SPLIT" == "yes" -o $MOCKVER -ge 15 -o "$MOCKVER" == "rawhide" ]; then
   BUILDPARAM="$BUILDPARAM $ISOVER"
 elif [ "$SPLIT" == "" ]; then
   BUILDPARAM="$BUILDPARAM $ISOVER --nosplitmedia"
@@ -153,7 +153,10 @@ fi
 
 # new final release feature
 if [ "$MOCKVER" != "rawhide" ]; then
-  if [ $MOCKVER -ge 15 ]; then
+#  uncomment when 16 will be stable
+#  if [ $MOCKVER -ge 15 ]; then
+# comment and replace version to 17 before building 17-Beta
+  if [ $MOCKVER -eq 15 ]; then
     BUILDPARAM="$BUILDPARAM --isfinal"
   fi
 fi
