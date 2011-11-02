@@ -156,7 +156,7 @@ if [ "$MOCKVER" != "rawhide" ]; then
 #  uncomment when 16 will be stable
 #  if [ $MOCKVER -ge 15 ]; then
 # comment and replace version to 17 before building 17-Beta
-  if [ $MOCKVER -eq 15 ]; then
+  if [ $MOCKVER -eq 15 -o $MOCKVER -eq 16 ]; then
     BUILDPARAM="$BUILDPARAM --isfinal"
   fi
 fi
