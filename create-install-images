@@ -17,7 +17,6 @@ usage()
   echo "    arch:          i386 | x86_64 | all"
   echo "    options:"
   echo "    --vcs-configs  pull kickstarts from GIT"
-  echo "    --split        create install CD disks"
   echo "    --rebuild      only run pungi in created mock environment"
   echo "    --config <ks>  use custom kickstart file"
   echo "    --local        use localhost instead of mirrors.rfremix.ru"
@@ -56,10 +55,6 @@ while [ $# -gt 0 ]; do
       LOCAL="yes"
       shift
     ;;
-    --split)
-      SPLIT="yes"
-      shift
-    ;;
     --rebuild)
       REBUILD="yes"
       shift
@@ -93,7 +88,7 @@ RAWHIDEKS="/usr/share/spin-kickstarts/$LCDIST-install-rawhide-$LCDIST.ks"
 RELEASEKS="/usr/share/spin-kickstarts/$LCDIST-install-$LCDIST.ks"
 LOGFILE="/var/tmp/$LCDIST-build.log"
 
-SUPPORT_VERSIONS="13 14 15 16 rawhide"
+SUPPORT_VERSIONS="16 17 18 rawhide"
 
 # check version
 MOCKVER=$(echo $VERSION | awk -F"." '{ print $1 }' | awk -F"-" '{ print $1 }')
@@ -144,19 +139,14 @@ for arch in $ARCH; do
   fi
 done
 
-# check for split
-if [ "$SPLIT" == "yes" -o $MOCKVER -ge 15 -o "$MOCKVER" == "rawhide" ]; then
-  BUILDPARAM="$BUILDPARAM $ISOVER"
-elif [ "$SPLIT" == "" ]; then
-  BUILDPARAM="$BUILDPARAM $ISOVER --nosplitmedia"
-fi
+BUILDPARAM="$BUILDPARAM $ISOVER"
 
 # new final release feature
 if [ "$MOCKVER" != "rawhide" ]; then
 #  uncomment when 16 will be stable
 #  if [ $MOCKVER -ge 15 ]; then
 # comment and replace version to 17 before building 17-Beta
-  if [ $MOCKVER -eq 15 -o $MOCKVER -eq 16 ]; then
+  if [ $MOCKVER -eq 15 -o $MOCKVER -eq 16 -o $MOCKVER -eq 17 ]; then
     BUILDPARAM="$BUILDPARAM --isfinal"
   fi
 fi
@@ -218,10 +208,7 @@ for i in $ARCH; do
     KS="/usr/share/spin-kickstarts/local-install-local.ks"
   fi
 
-  # In Fedora 14 pungi strange handle versions. Let it be 14 allways. Rawhide too.
-  if [ "$MOCKVER" == "14" ]; then
-    mock -r $LCDIST-$MOCKVER-$i --chroot "sed -i 's!\$releasever!14!g' $RELEASEKS" >> $LOGFILE 2>&1
-  elif [ "$MOCKVER" == "rawhide" ]; then
+  if [ "$MOCKVER" == "rawhide" ]; then
     mock -r $LCDIST-$MOCKVER-$i --chroot "sed -i 's!\$releasever!rawhide!g' $RELEASEKS" >> $LOGFILE 2>&1
   fi
 
