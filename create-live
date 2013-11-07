@@ -5,23 +5,17 @@ export LANG=C
 usage()
 {
   echo
-  echo "Create RFRemix Live images based on Fedora package base"
+  echo "Create RFRemix Live images based on Fedora 15 package base"
   echo "from internet."
   echo
-  echo "create-live <imagename> <i686|x86_64|all> <version> [options]"
-  echo
-  echo "  imagename:"
-  echo "    -g - GNOME LiveCD"
-  echo "    -k - KDE LiveCD"
-  echo "    -x - XFCE LiveCD"
-  echo "    -l - LXDE LiveCD"
-  echo "    -d - GNOME, KDE, XFCE, LXDE LiveDVD"
-  echo "    -K - KDE LiveDVD"
-  echo "    -a - Build GNOME, KDE, XFCE, LXDE and LiveDVD images"
-  echo
-  echo "  options:"
-  echo "    --local - use localhost instead of mirrors.rfremix.ru"
-  echo
+  echo "create-live <imagename> <i686|x86_64|all> <version>"
+  echo "	-g - GNOME LiveCD"
+  echo "	-k - KDE LiveCD"
+  echo "	-x - XFCE LiveCD"
+  echo "	-l - LXDE LiveCD"
+  echo "	-m - MATE LiveCD"
+  echo "	-d - GNOME, KDE, XFCE, LXDE LiveDVD"
+  echo "	-K - KDE LiveCD KDE Minimal"
   exit 2
 }
 
@@ -35,6 +29,12 @@ fail()
   echo -e "\t\t\\033[0;31m[ FAIL ]\\033[0;39m"
 }
 
+faile()
+{
+  echo -e "\t\t\\033[0;31m[ FAIL ]\\033[0;39m"
+  exit 1
+}
+
 if [ `id -u` -ne 0 ]; then
   echo "Login as root! Abort..."
   exit 3
@@ -44,7 +44,7 @@ BUILDDIR="$(pwd)"
 CONFIGPATH="$BUILDDIR/kickstarts"
 LOGFILE="$BUILDDIR/build-$(date +%Y%m%d%H%M).log"
 
-if [ ! -d "/usr/share/spin-kickstarts/" ]; then
+if [ ! -d "/usr/share/spin-kickstarts/" -a ! -d "$BUILDDIR/kickstarts" ]; then
   echo "No config found. Abort..."
   exit 5
 fi
@@ -66,21 +66,26 @@ case "$1" in
     DIST=("Live-LXDE")
     CONFIG=("$CONFIGPATH/rfremix-livecd-lxde-ru_RU.ks")
     ;;
+  -m)
+    DIST=("Live-MATE")
+    CONFIG=("$CONFIGPATH/rfremix-livecd-mate-ru_RU.ks")
+    ;;
   -d)
     DIST=("LiveDVD")
     CONFIG=("$CONFIGPATH/rfremix-livedvd-desktop-ru_RU.ks")
     ;;
   -K)
-    DIST=("LiveDVD-KDE")
-    CONFIG=("$CONFIGPATH/rfremix-livedvd-kde-ru_RU.ks")
+    DIST=("Live-KDE-minimal")
+    CONFIG=("$CONFIGPATH/rfremix-livecd-kde-minimal-ru_RU.ks")
     ;;
   -a)
-    DIST=("Live-GNOME" "Live-KDE" "Live-XFCE" "Live-LXDE" "LiveDVD-KDE")
+    DIST=("Live-GNOME" "Live-KDE" "Live-XFCE" "Live-LXDE" "Live-MATE" "Live-KDE-minimal")
     CONFIG=("$CONFIGPATH/rfremix-livecd-desktop-ru_RU.ks"
             "$CONFIGPATH/rfremix-livecd-kde-ru_RU.ks"
             "$CONFIGPATH/rfremix-livecd-xfce-ru_RU.ks"
             "$CONFIGPATH/rfremix-livecd-lxde-ru_RU.ks"
-            "$CONFIGPATH/rfremix-livedvd-kde-ru_RU.ks")
+            "$CONFIGPATH/rfremix-livecd-mate-ru_RU.ks"
+            "$CONFIGPATH/rfremix-livecd-kde-minimal-ru_RU.ks")
     ;;
   -clean-all)
     rm -f *.iso *-CHECKSUM
@@ -115,13 +120,14 @@ if [ "$?" -eq 0 -a "$(uname -m)" != "x86_64" ]; then
 fi
 
 version=$3
+release_version=$(echo $version | awk -F[.-] '{ print $1 }')
 
 if [ "x$version" == "x" ]; then
   usage
 fi
 
 echo -n "Creating Build directory                       "
-mkdir -p $BUILDDIR/tmp && mkdir -p $BUILDDIR/kickstarts && ok || fail
+mkdir -p $BUILDDIR/tmp && mkdir -p $BUILDDIR/kickstarts && ok || faile
 
 if [ "$(ls -A $BUILDDIR/kickstarts)" ]; then
   echo "$BUILDDIR/kickstarts/ is not empty"
@@ -144,6 +150,8 @@ echo "Logging to $LOGFILE"
 
 pushd $BUILDDIR > /dev/null
 
+setenforce 0
+
 for arch in $ARCH; do
   for i in `seq 0 $((${#DIST[*]}-1))`; do
     if [ ! -f "${CONFIG[i]}" ]; then
@@ -156,10 +164,10 @@ for arch in $ARCH; do
 
     LABEL=$(echo RFRemix-$version-$arch-${DIST[i]}.iso | sed 's!\.iso!!g' | cut -b 1-32)
 
-    echo -n "Creating RFRemix-$version-$arch-${DIST[i]}.iso   "
+    echo -n "Creating RFRemix-$version-$arch-${DIST[i]}.iso "
 
-    setarch $arch livecd-creator -v -d -t $BUILDDIR/tmp --cache=$BUILDDIR/tmp \
-        -f $LABEL --product=RFRemix --title=RFRemix -c ${CONFIG[i]} >> $LOGFILE 2>&1 && \
+    setarch $arch livecd-creator --releasever=release_version -v -d -t $BUILDDIR/tmp --cache=$BUILDDIR/tmp \
+        -f $LABEL --product=RFRemix --title="RFRemix $version" -c ${CONFIG[i]} >> $LOGFILE 2>&1 && \
       if [ "$LABEL.iso" != "RFRemix-$version-$arch-${DIST[i]}.iso" ]; then
         mv $LABEL.iso RFRemix-$version-$arch-${DIST[i]}.iso; fi && \
       sha256sum RFRemix-$version-$arch-${DIST[i]}.iso > \
@@ -169,3 +177,4 @@ done
 
 popd > /dev/null
 
+setenforce 1
