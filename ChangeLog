@@ -1,3 +1,9 @@
+* Thu Nov  7 2013 [0.6.2]
+- update supported distribution version
+- update isFinal distribution version
+- switch SELinux to permissive mode during building live images
+- update livecd-creator parameters
+
 * Thu Nov  3 2011 [0.6.1]
 - Fedora 16 is final
 
