@@ -88,7 +88,7 @@ RAWHIDEKS="/usr/share/spin-kickstarts/$LCDIST-install-rawhide-$LCDIST.ks"
 RELEASEKS="/usr/share/spin-kickstarts/$LCDIST-install-$LCDIST.ks"
 LOGFILE="/var/tmp/$LCDIST-build.log"
 
-SUPPORT_VERSIONS="16 17 18 rawhide"
+SUPPORT_VERSIONS="18 19 20 rawhide"
 
 # check version
 MOCKVER=$(echo $VERSION | awk -F"." '{ print $1 }' | awk -F"-" '{ print $1 }')
@@ -146,7 +146,7 @@ if [ "$MOCKVER" != "rawhide" ]; then
 #  uncomment when 16 will be stable
 #  if [ $MOCKVER -ge 15 ]; then
 # comment and replace version to 17 before building 17-Beta
-  if [ $MOCKVER -eq 15 -o $MOCKVER -eq 16 -o $MOCKVER -eq 17 ]; then
+  if [ $MOCKVER -eq 18 -o $MOCKVER -eq 19 ]; then
     BUILDPARAM="$BUILDPARAM --isfinal"
   fi
 fi
@@ -172,7 +172,7 @@ if [ "$REBUILD" != "yes" ]; then
         if [ "$VERSION" == "rawhide" ]; then
           mock -r $LCDIST-$MOCKVER-$i --chroot "mkdir -p /usr/share/spin-kickstarts/; git clone git://git.fedorahosted.org/spin-kickstarts.git /usr/share/spin-kickstarts/" >> $LOGFILE 2>&1
         else
-          mock -r $LCDIST-$MOCKVER-$i --chroot "mkdir -p /usr/share/spin-kickstarts/; git clone -b F-$MOCKVER git://git.fedorahosted.org/spin-kickstarts.git /usr/share/spin-kickstarts/" >> $LOGFILE 2>&1
+          mock -r $LCDIST-$MOCKVER-$i --chroot "mkdir -p /usr/share/spin-kickstarts/; git clone -b f$MOCKVER git://git.fedorahosted.org/spin-kickstarts.git /usr/share/spin-kickstarts/" >> $LOGFILE 2>&1
         fi
       elif [ "$DIST" == "RFRemix" ]; then
         if [ "$VERSION" == "rawhide" ]; then
